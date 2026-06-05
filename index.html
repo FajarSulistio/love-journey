@@ -961,9 +961,25 @@ async function deletePhoto(url) {
   });
 }
 
+async function sbFetchWithRetry(path, opts = {}, retries = 3, delay = 1500) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await sbFetch(path, opts);
+    } catch(e) {
+      const isTimeout = e.message && e.message.includes('57014');
+      if (isTimeout && i < retries - 1) {
+        console.warn(`Supabase timeout, retrying (${i+1}/${retries-1})...`);
+        await new Promise(r => setTimeout(r, delay));
+      } else {
+        throw e;
+      }
+    }
+  }
+}
+
 async function loadFromSupabase() {
   try {
-    const rows = await sbFetch('/rest/v1/love_journey?select=*');
+    const rows = await sbFetchWithRetry('/rest/v1/love_journey?select=*');
     if (!rows || !rows.length) return;
     rows.forEach(row => {
       if (!extras[row.date_id]) extras[row.date_id] = {};
@@ -977,7 +993,7 @@ async function loadFromSupabase() {
       const dt = DATE_LIST.find(d => d.id === row.date_id);
       if (dt) dt.done = row.done;
     });
-    const meta = await sbFetch('/rest/v1/love_journey_meta?select=*&key=eq.main');
+    const meta = await sbFetchWithRetry('/rest/v1/love_journey_meta?select=*&key=eq.main');
     if (meta && meta.length) {
       const m = JSON.parse(meta[0].value || '{}');
       if (m.startDate) startDate = m.startDate;
