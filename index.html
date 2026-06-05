@@ -961,7 +961,7 @@ async function deletePhoto(url) {
   });
 }
 
-async function sbFetchWithRetry(path, opts = {}, retries = 3, delay = 1500) {
+async function sbFetchWithRetry(path, opts = {}, retries = 3, delay = 5000) {
   for (let i = 0; i < retries; i++) {
     try {
       return await sbFetch(path, opts);
