@@ -1486,6 +1486,32 @@ function renderAll() {
   renderCards();
 }
 
+// ── KEEP-ALIVE PING ──
+// Ping Supabase setiap 4 hari supaya project tidak di-pause
+async function keepAlive() {
+  try {
+    await sbFetch('/rest/v1/love_journey_meta?select=key&limit=1');
+    console.log('💕 Supabase keep-alive ping OK');
+    localStorage.setItem('lastPing', Date.now().toString());
+  } catch(e) {
+    // silent fail, tidak masalah
+  }
+}
+
+function scheduleKeepAlive() {
+  const last = parseInt(localStorage.getItem('lastPing') || '0');
+  const fourDays = 4 * 24 * 60 * 60 * 1000;
+  if (Date.now() - last > fourDays) {
+    // Ping setelah 3 detik halaman terbuka
+    setTimeout(keepAlive, 3000);
+  }
+  // Cek lagi setiap 12 jam selama halaman terbuka
+  setInterval(() => {
+    const lastNow = parseInt(localStorage.getItem('lastPing') || '0');
+    if (Date.now() - lastNow > fourDays) keepAlive();
+  }, 12 * 60 * 60 * 1000);
+}
+
 // ── INIT ──
 async function init() {
   loadLocal();
@@ -1494,6 +1520,7 @@ async function init() {
   renderAll();
   if (loveLetterText) document.getElementById('loveLetterBody').value = loveLetterText;
   if (loveLetterSig) document.getElementById('loveLetterSig').value = loveLetterSig;
+  scheduleKeepAlive();
 }
 
 init();
