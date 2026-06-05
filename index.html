@@ -1305,9 +1305,28 @@ function renderPhotoSwiper() {
     modalPhotos.forEach((src, i) => {
       const slide = document.createElement('div');
       slide.className = 'photo-slide';
+      slide.style.position = 'relative';
       const img = document.createElement('img');
       img.src = src;
       slide.appendChild(img);
+      const delBtn = document.createElement('button');
+      delBtn.textContent = '🗑️ hapus foto';
+      delBtn.style.cssText = 'position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.55);color:#fff;border:none;border-radius:20px;padding:5px 14px;font-size:12px;cursor:pointer;font-family:Poppins,sans-serif;';
+      delBtn.addEventListener('click', async () => {
+        if (!confirm('Hapus foto ini?')) return;
+        const url = modalPhotos[i];
+        if (url.startsWith('http')) await deletePhoto(url).catch(()=>{});
+        modalPhotos.splice(i, 1);
+        renderPhotoSwiper();
+        if (!extras[currentId]) extras[currentId] = {};
+        extras[currentId].photos = modalPhotos.slice();
+        extras[currentId].done = DATE_LIST.find(d => d.id === currentId).done;
+        extras[currentId].dateStr = document.getElementById('mDate').value;
+        extras[currentId].note = document.getElementById('mNote').value;
+        saveLocal();
+        saveDateToSupabase(currentId);
+      });
+      slide.appendChild(delBtn);
       inner.appendChild(slide);
       const dot = document.createElement('div');
       dot.className = 'photo-dot' + (i === modalCurrentPhoto ? ' active' : '');
@@ -1345,6 +1364,14 @@ document.getElementById('photoFileInput').addEventListener('change', async e => 
   uploadBtn.textContent = '📸 Add photo';
   uploadBtn.disabled = false;
   e.target.value = '';
+  // auto-save after upload
+  if (!extras[currentId]) extras[currentId] = {};
+  extras[currentId].photos = modalPhotos.slice();
+  extras[currentId].done = DATE_LIST.find(d => d.id === currentId).done;
+  extras[currentId].dateStr = document.getElementById('mDate').value;
+  extras[currentId].note = document.getElementById('mNote').value;
+  saveLocal();
+  saveDateToSupabase(currentId);
 });
 
 document.getElementById('btnAddPhoto').addEventListener('click', () => {
