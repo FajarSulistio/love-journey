@@ -1,0 +1,9 @@
+{
+  "name": "love-journey",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Our Love Journey - date bucket list app, hosted on Vercel with Vercel Blob storage",
+  "dependencies": {
+    "@vercel/blob": "^2.8.0"
+  }
+}

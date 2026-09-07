@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Our Love Journey 💕</title>
+<meta name="theme-color" content="#f96ba8">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Love Journey">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --pink: #FFD6E7;
+    --pink-mid: #ffb3d1;
+    --pink-deep: #f96ba8;
+    --cream: #FFF8F0;
+    --lavender: #EBD8FF;
+    --blue: #DDF3FF;
+    --text: #3d2535;
+    --text-soft: #a0708a;
+    --white: #ffffff;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── Hearts background ── */
+  #hearts-canvas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page { position: relative; z-index: 1; }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(160deg, #ffe0ee 0%, #f3d8ff 50%, #ddf3ff 100%);
+    text-align: center;
+    padding: 3rem 1.5rem 2rem;
+    border-bottom: 2px dashed var(--pink-mid);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext y='40' font-size='24' opacity='0.07'%3E💕%3C/text%3E%3C/svg%3E") repeat;
+    pointer-events: none;
+  }
+
+  .header-tag {
+    display: inline-block;
+    background: var(--white);
+    color: var(--pink-deep);
+    font-family: 'Dancing Script', cursive;
+    font-size: 13px;
+    padding: 4px 14px;
+    border-radius: 20px;
+    border: 1.5px solid var(--pink-mid);
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+  }
+
+  .header h1 {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(2rem, 7vw, 3.2rem);
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+    margin-bottom: 8px;
+    text-shadow: 1px 2px 0px rgba(249,107,168,0.15);
+  }
+
+  .header-sub {
+    font-size: 13px;
+    color: var(--text-soft);
+    font-style: italic;
+    margin-bottom: 1.5rem;
+  }
+
+  /* ── Together counter ── */
+  .together-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--white);
+    border: 1.5px solid var(--pink-mid);
+    border-radius: 50px;
+    padding: 10px 22px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 12px rgba(249,107,168,0.15);
+  }
+
+  .together-heart { font-size: 20px; animation: heartbeat 1.2s ease-in-out infinite; }
+  @keyframes heartbeat {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+  }
+
+  .together-text { font-size: 13px; color: var(--text-soft); }
+  .together-days { font-family: 'Dancing Script', cursive; font-size: 22px; color: var(--pink-deep); font-weight: 700; }
+
+  /* ── Progress ── */
+  .progress-wrap {
+    max-width: 340px;
+    margin: 0 auto;
+    text-align: left;
+  }
+
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-soft);
+    margin-bottom: 6px;
+  }
+
+  .progress-bar {
+    height: 10px;
+    background: rgba(249,107,168,0.15);
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--pink-mid);
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #f9c0d8, #f96ba8);
+    border-radius: 10px;
+    transition: width 0.6s cubic-bezier(0.34,1.2,0.64,1);
+  }
+
+  /* ── DATE PICKER ── */
+  .start-date-section {
+    background: var(--white);
+    border: 1.5px dashed var(--pink-mid);
+    border-radius: 16px;
+    padding: 12px 18px;
+    max-width: 340px;
+    margin: 1rem auto 0;
+    text-align: center;
+  }
+
+  .start-date-section label {
+    font-size: 12px;
+    color: var(--text-soft);
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .start-date-section input {
+    border: 1.5px solid var(--pink-mid);
+    border-radius: 10px;
+    padding: 6px 12px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    background: var(--cream);
+    cursor: pointer;
+  }
+
+  /* ── SECTIONS ── */
+  .section {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2rem 1.2rem;
+  }
+
+  .section-title {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.7rem;
+    color: var(--text);
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ── QUICK ACTIONS ── */
+  .quick-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+    justify-content: center;
+  }
+
+  .btn-action {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--white);
+    border: 1.5px solid var(--pink-mid);
+    border-radius: 50px;
+    padding: 10px 20px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.18s;
+    box-shadow: 0 2px 8px rgba(249,107,168,0.1);
+  }
+
+  .btn-action:hover {
+    background: var(--pink);
+    border-color: var(--pink-deep);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(249,107,168,0.2);
+  }
+
+  .btn-action:active { transform: scale(0.97); }
+
+  /* ── RANDOM RESULT ── */
+  .random-result {
+    display: none;
+    background: linear-gradient(135deg, #ffe0ee, #f3d8ff);
+    border: 2px solid var(--pink-mid);
+    border-radius: 20px;
+    padding: 1.5rem;
+    text-align: center;
+    margin: 1rem auto;
+    max-width: 320px;
+    animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  .random-result.show { display: block; }
+
+  .random-result .r-title {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.1rem;
+    color: var(--text-soft);
+    margin-bottom: 8px;
+  }
+
+  .random-result .r-date {
+    font-family: 'Dancing Script', cursive;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  @keyframes popIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  /* ── DATE CARDS ── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+  }
+
+  .date-card {
+    background: var(--white);
+    border: 1.5px solid #fad6e8;
+    border-radius: 18px;
+    padding: 1rem 0.8rem;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(249,107,168,0.07);
+    user-select: none;
+  }
+
+  .date-card:hover {
+    transform: translateY(-3px) rotate(0.5deg);
+    box-shadow: 0 8px 20px rgba(249,107,168,0.18);
+    border-color: var(--pink-deep);
+  }
+
+  .date-card.done {
+    background: linear-gradient(135deg, #fff0f7, #f3eeff);
+    border-color: var(--pink-mid);
+  }
+
+  .date-card.special {
+    border-color: #c9b4f5;
+    background: linear-gradient(135deg, #f5f0ff, #ffe8f5);
+  }
+
+  .card-emoji-wrap { font-size: 2rem; margin-bottom: 6px; line-height: 1; }
+
+  .card-name {
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.3;
+    margin-bottom: 6px;
+  }
+
+  .card-status {
+    font-size: 10px;
+    color: var(--text-soft);
+    font-style: italic;
+  }
+
+  .card-status.completed { color: var(--pink-deep); font-weight: 600; font-style: normal; }
+
+  .card-checkmark {
+    position: absolute;
+    top: 7px;
+    right: 9px;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .date-card.done .card-checkmark { opacity: 1; }
+  .card-star { position: absolute; top: 7px; left: 9px; font-size: 12px; }
+
+  /* ── TIMELINE ── */
+  .timeline {
+    position: relative;
+    padding-left: 28px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 11px;
+    top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--pink-mid), var(--lavender));
+    border-radius: 2px;
+  }
+
+  .tl-year {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.5rem;
+    color: var(--text-soft);
+    margin: 1.2rem 0 0.6rem;
+    position: relative;
+  }
+
+  .tl-year::before {
+    content: '';
+    position: absolute;
+    left: -21px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 10px; height: 10px;
+    background: var(--pink-deep);
+    border-radius: 50%;
+    border: 2px solid var(--white);
+    box-shadow: 0 0 0 2px var(--pink-mid);
+  }
+
+  .tl-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    margin-bottom: 6px;
+    cursor: pointer;
+    transition: background 0.15s;
+    position: relative;
+  }
+
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    left: -18px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px; height: 6px;
+    background: var(--pink-mid);
+    border-radius: 50%;
+  }
+
+  .tl-item:hover { background: var(--pink); }
+
+  .tl-emoji { font-size: 18px; }
+
+  .tl-info { flex: 1; }
+  .tl-name { font-size: 13px; font-weight: 500; color: var(--text); }
+  .tl-date-label { font-size: 11px; color: var(--text-soft); }
+
+  /* ── POLAROID WALL ── */
+  .polaroid-wall {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+    padding: 1rem 0;
+  }
+
+  .polaroid {
+    background: var(--white);
+    border: 1px solid #e8d0dc;
+    padding: 10px 10px 28px;
+    width: 130px;
+    box-shadow: 2px 4px 12px rgba(0,0,0,0.08);
+    cursor: pointer;
+    transition: transform 0.2s;
+    position: relative;
+  }
+
+  .polaroid:nth-child(odd) { transform: rotate(-2.5deg); }
+  .polaroid:nth-child(even) { transform: rotate(1.8deg); }
+  .polaroid:hover { transform: rotate(0deg) scale(1.05) !important; z-index: 2; box-shadow: 4px 8px 20px rgba(0,0,0,0.14); }
+
+  .polaroid-photo {
+    width: 100%;
+    height: 100px;
+    background: linear-gradient(135deg, var(--pink), var(--lavender));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    overflow: hidden;
+    border-radius: 2px;
+  }
+
+  .polaroid-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 2px;
+  }
+
+  .polaroid-label {
+    position: absolute;
+    bottom: 6px;
+    left: 0; right: 0;
+    text-align: center;
+    font-family: 'Dancing Script', cursive;
+    font-size: 13px;
+    color: var(--text-soft);
+  }
+
+  /* ── LOVE LETTER ── */
+  .love-letter {
+    background: var(--white);
+    border: 2px dashed var(--pink-mid);
+    border-radius: 20px;
+    padding: 2rem 2rem 1.5rem;
+    max-width: 480px;
+    margin: 0 auto;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(249,107,168,0.1);
+  }
+
+  .love-letter::before {
+    content: '💌';
+    font-size: 28px;
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--cream);
+    padding: 0 8px;
+  }
+
+  .love-letter textarea {
+    width: 100%;
+    min-height: 130px;
+    border: none;
+    background: transparent;
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.1rem;
+    color: var(--text);
+    resize: none;
+    outline: none;
+    line-height: 1.7;
+  }
+
+  .love-letter-footer {
+    text-align: right;
+    font-family: 'Dancing Script', cursive;
+    font-size: 1rem;
+    color: var(--text-soft);
+    margin-top: 8px;
+    border-top: 1px solid var(--pink);
+    padding-top: 8px;
+  }
+
+  .love-letter-footer input {
+    background: transparent;
+    border: none;
+    font-family: 'Dancing Script', cursive;
+    font-size: 1rem;
+    color: var(--pink-deep);
+    outline: none;
+    width: 120px;
+    text-align: right;
+  }
+
+  /* ── NAV TABS ── */
+  .nav-tabs {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 1rem 1rem 0;
+    background: var(--cream);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border-bottom: 1.5px solid var(--pink);
+  }
+
+  .nav-tab {
+    background: none;
+    border: 1.5px solid transparent;
+    padding: 8px 16px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-soft);
+    cursor: pointer;
+    border-radius: 20px;
+    transition: all 0.18s;
+  }
+
+  .nav-tab:hover { background: var(--pink); color: var(--text); }
+  .nav-tab.active { background: var(--pink-deep); color: var(--white); border-color: var(--pink-deep); }
+
+  /* ── MODAL ── */
+  .modal-bg {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(61,37,53,0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .modal-bg.open { display: flex; }
+
+  .modal {
+    background: var(--white);
+    border-radius: 24px;
+    max-width: 380px;
+    width: 100%;
+    padding: 1.8rem 1.5rem 1.5rem;
+    position: relative;
+    animation: popIn 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    border: 2px solid var(--pink-mid);
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 12px; right: 14px;
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: var(--text-soft);
+  }
+
+  .modal-emoji-big { font-size: 3.5rem; text-align: center; margin-bottom: 6px; }
+  .modal-name {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.8rem;
+    text-align: center;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .modal-badge {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+
+  .badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 14px;
+    border-radius: 20px;
+    background: #ffe0ee;
+    color: var(--pink-deep);
+  }
+
+  .badge.done { background: var(--pink-deep); color: var(--white); }
+
+  /* Date input */
+  .modal-field {
+    margin-bottom: 12px;
+  }
+
+  .modal-field label {
+    font-size: 11px;
+    color: var(--text-soft);
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .modal-field input[type="date"],
+  .modal-field textarea {
+    width: 100%;
+    border: 1.5px solid var(--pink-mid);
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    background: var(--cream);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .modal-field textarea {
+    resize: vertical;
+    min-height: 70px;
+    font-style: italic;
+    font-size: 13px;
+  }
+
+  .modal-field input:focus,
+  .modal-field textarea:focus { border-color: var(--pink-deep); }
+
+  /* Photo swiper */
+  .photo-swiper {
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, var(--pink), var(--lavender));
+  }
+
+  .photo-swiper-inner {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    gap: 0;
+  }
+
+  .photo-swiper-inner::-webkit-scrollbar { display: none; }
+
+  .photo-slide {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .photo-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .photo-slide .add-photo-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    color: var(--white);
+    font-size: 12px;
+    padding: 1rem;
+  }
+
+  .photo-slide .add-photo-btn span { font-size: 36px; }
+
+  .photo-dots {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+
+  .photo-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--pink-mid);
+    transition: background 0.15s;
+    cursor: pointer;
+  }
+
+  .photo-dot.active { background: var(--pink-deep); }
+
+  /* Actions */
+  .modal-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .btn-modal {
+    padding: 10px 0;
+    border-radius: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1.5px solid var(--pink-mid);
+    transition: all 0.15s;
+  }
+
+  .btn-modal:active { transform: scale(0.97); }
+
+  .btn-done {
+    background: var(--pink-deep);
+    color: var(--white);
+    border-color: var(--pink-deep);
+  }
+
+  .btn-done:hover { background: #e05090; }
+  .btn-outline-modal { background: var(--white); color: var(--text); }
+  .btn-outline-modal:hover { background: var(--pink); }
+
+  input[type="file"] { display: none; }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-soft);
+    font-style: italic;
+    font-size: 14px;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center;
+    padding: 2rem;
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.1rem;
+    color: var(--text-soft);
+    background: linear-gradient(to right, var(--pink), var(--lavender), var(--blue));
+    border-top: 2px dashed var(--pink-mid);
+  }
+
+  /* ── SECTION VISIBILITY ── */
+  .tab-section { display: none; }
+  .tab-section.active { display: block; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 480px) {
+    .cards-grid { grid-template-columns: repeat(2, 1fr); }
+    .header { padding: 2rem 1rem 1.5rem; }
+    .quick-actions { gap: 7px; }
+    .btn-action { font-size: 12px; padding: 8px 14px; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="hearts-canvas"></canvas>
+
+<div class="page">
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-tag">✨ made with love ✨</div>
+  <h1>💌 Our Date Bucket List 💌</h1>
+  <p class="header-sub">Every check mark tells a story ✨</p>
+
+  <div class="together-box">
+    <span class="together-heart">❤️</span>
+    <span class="together-text">Together for</span>
+    <span class="together-days" id="daysCount">—</span>
+    <span class="together-text">days</span>
+    <span class="together-heart">❤️</span>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span>❤️ Completed: <strong id="progressNum">0 / 35</strong></span>
+      <span id="progressPct">0%</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div class="start-date-section">
+    <label>💕 Together since</label>
+    <input type="date" id="startDateInput">
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav-tabs">
+  <button class="nav-tab active" data-tab="cards">🌸 Dates</button>
+  <button class="nav-tab" data-tab="timeline">📅 Timeline</button>
+  <button class="nav-tab" data-tab="wall">📷 Memory Wall</button>
+  <button class="nav-tab" data-tab="letter">💌 Love Letter</button>
+</div>
+
+<!-- TAB: CARDS -->
+<div class="tab-section active" id="tab-cards">
+  <div class="section">
+    <div class="quick-actions">
+      <button class="btn-action" onclick="pickRandom()">🎲 Pick Our Next Date</button>
+      <button class="btn-action" onclick="scrollToFav()">⭐ View Favorite</button>
+    </div>
+
+    <div class="random-result" id="randomResult">
+      <div class="r-title">✨ Next Mission ✨</div>
+      <div class="r-date" id="randomDateName"></div>
+    </div>
+
+    <div class="section-title">🌸 All Our Dates</div>
+    <div class="cards-grid" id="cardsGrid"></div>
+  </div>
+</div>
+
+<!-- TAB: TIMELINE -->
+<div class="tab-section" id="tab-timeline">
+  <div class="section">
+    <div class="section-title">📅 Our Journey</div>
+    <div class="timeline" id="timeline">
+      <div class="empty-state">No completed dates yet~ mark some as done to see your journey 🌸</div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB: WALL -->
+<div class="tab-section" id="tab-wall">
+  <div class="section">
+    <div class="section-title">📷 Memory Wall</div>
+    <div class="polaroid-wall" id="polaroidWall">
+      <div class="empty-state">Photos will appear here when you add them to completed dates 💕</div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB: LETTER -->
+<div class="tab-section" id="tab-letter">
+  <div class="section" style="max-width:540px; margin:0 auto;">
+    <div class="section-title">💌 Love Letter</div>
+    <div class="love-letter">
+      <textarea id="loveLetterBody" placeholder="To my favorite person,&#10;&#10;Thank you for being my favorite adventure.&#10;&#10;Every moment with you is something I'll treasure forever..."></textarea>
+      <div class="love-letter-footer">
+        Love, <input type="text" id="loveLetterSig" value="Fajar ❤️" placeholder="your name">
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /page -->
+
+<!-- PWA Install Banner -->
+<div id="installBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:999;background:linear-gradient(135deg,#ffe0ee,#f3d8ff);border-top:2px solid #ffb3d1;padding:12px 16px;align-items:center;gap:10px;box-shadow:0 -4px 20px rgba(249,107,168,0.2);">
+  <span style="font-size:22px;">💕</span>
+  <div style="flex:1;">
+    <div style="font-family:'Dancing Script',cursive;font-size:15px;color:#3d2535;font-weight:600;">Install Our Love Journey</div>
+    <div style="font-size:11px;color:#a0708a;">Simpan di homescreen HP kalian 🌸</div>
+  </div>
+  <button id="installBtn" style="background:#f96ba8;color:#fff;border:none;border-radius:20px;padding:8px 16px;font-family:Poppins,sans-serif;font-size:12px;font-weight:600;cursor:pointer;">Install</button>
+  <button id="installDismiss" style="background:none;border:none;font-size:18px;cursor:pointer;color:#a0708a;">✕</button>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <button class="modal-close" id="modalClose">✕</button>
+    <div class="modal-emoji-big" id="mEmoji"></div>
+    <div class="modal-name" id="mName"></div>
+    <div class="modal-badge"><span class="badge" id="mBadge"></span></div>
+
+    <div class="photo-swiper" id="photoSwiper">
+      <div class="photo-swiper-inner" id="photoSwiperInner"></div>
+    </div>
+    <div class="photo-dots" id="photoDots"></div>
+
+    <div class="modal-field">
+      <label>📅 Date</label>
+      <input type="date" id="mDate">
+    </div>
+
+    <div class="modal-field">
+      <label>💬 Memory note</label>
+      <textarea id="mNote" placeholder="A little note about this date..."></textarea>
+    </div>
+
+    <input type="file" accept="image/*" id="photoFileInput" multiple>
+
+    <div class="modal-actions">
+      <button class="btn-modal btn-done" id="btnToggleDone">Mark as done ✓</button>
+      <button class="btn-modal btn-outline-modal" id="btnAddPhoto">📸 Add photo</button>
+      <button class="btn-modal btn-outline-modal" id="btnSetFav">⭐ Set as favorite</button>
+      <button class="btn-modal btn-outline-modal" id="btnSave">💾 Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  made with 💕 for you — every adventure is better together
+</div>
+
+<script>
+// ── SERVER (Vercel API + Vercel Blob) ──
+// Photos are uploaded straight from the browser to Vercel Blob storage
+// (see /api/upload.js), so there's no server body-size limit on photo size.
+// The rest of the data (checklist, notes, love letter) is stored as one
+// small JSON file in Blob storage via /api/data.js.
+
+let blobUploadFn = null;
+async function getBlobUpload() {
+  if (blobUploadFn) return blobUploadFn;
+  const mod = await import('https://esm.sh/@vercel/blob@2.8.0/client');
+  blobUploadFn = mod.upload;
+  return blobUploadFn;
+}
+
+async function uploadPhoto(file, dateId) {
+  const upload = await getBlobUpload();
+  const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+  const path = `love-journey/photos/date_${dateId}/${Date.now()}.${ext}`;
+  const blob = await upload(path, file, {
+    access: 'public',
+    handleUploadUrl: '/api/upload',
+    contentType: file.type || 'image/jpeg',
+  });
+  return blob.url;
+}
+
+async function deletePhoto(url) {
+  try {
+    await fetch('/api/delete-photo', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url })
+    });
+  } catch (e) { console.warn('Delete photo failed:', e); }
+}
+
+async function loadFromSupabase() {
+  try {
+    const res = await fetch('/api/data', { cache: 'no-store' });
+    if (!res.ok) throw new Error(await res.text());
+    const state = await res.json();
+    if (state.extras) {
+      extras = state.extras;
+      DATE_LIST.forEach(dt => { if (extras[dt.id]) dt.done = !!extras[dt.id].done; });
+    }
+    if (state.startDate) startDate = state.startDate;
+    if (state.loveLetterText !== undefined) loveLetterText = state.loveLetterText;
+    if (state.loveLetterSig !== undefined) loveLetterSig = state.loveLetterSig;
+  } catch (e) {
+    console.warn('Server load failed, using localStorage:', e);
+    loadLocal();
+  }
+}
+
+async function saveStateToServer() {
+  DATE_LIST.forEach(dt => {
+    if (!extras[dt.id]) extras[dt.id] = {};
+    extras[dt.id].done = dt.done;
+  });
+  try {
+    await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ extras, startDate, loveLetterText, loveLetterSig })
+    });
+  } catch (e) {
+    console.warn('Server save failed:', e);
+    saveLocal();
+  }
+}
+
+// saveDateToSupabase/saveMetaToSupabase both used to save one row at a time;
+// now the whole (tiny) state is saved together.
+async function saveDateToSupabase(_id) { await saveStateToServer(); }
+async function saveMetaToSupabase() { await saveStateToServer(); }
+
+// ── DATA ──
+const DATE_LIST = [
+  { id:0, label:"photobox date", emoji:"📸", done:true, special:false },
+  { id:1, label:"kebun raya date", emoji:"🌿", done:false, special:false },
+  { id:2, label:"hutan kota date", emoji:"🌳", done:false, special:false },
+  { id:3, label:"dufan date", emoji:"🎢", done:false, special:false },
+  { id:4, label:"zoo date", emoji:"🦁", done:false, special:false },
+  { id:5, label:"aquarium date", emoji:"🐠", done:false, special:false },
+  { id:6, label:"movie date", emoji:"🎬", done:true, special:false },
+  { id:7, label:"concert date", emoji:"🎶", done:false, special:false },
+  { id:8, label:"bookstore date", emoji:"📚", done:false, special:false },
+  { id:9, label:"city lights date", emoji:"🌃", done:false, special:false },
+  { id:10, label:"MRT date", emoji:"🚇", done:false, special:false },
+  { id:11, label:"picnic date", emoji:"🧺", done:false, special:false },
+  { id:12, label:"culinary date", emoji:"🍜", done:false, special:false },
+  { id:13, label:"florist date", emoji:"💐", done:false, special:false },
+  { id:14, label:"cycling date", emoji:"🚴", done:false, special:false },
+  { id:15, label:"museum date", emoji:"🏛️", done:true, special:false },
+  { id:16, label:"arcade date", emoji:"🕹️", done:false, special:false },
+  { id:17, label:"karaoke date", emoji:"🎤", done:false, special:false },
+  { id:18, label:"beach date", emoji:"🏖️", done:false, special:false },
+  { id:19, label:"stargazing date", emoji:"🌟", done:false, special:false },
+  { id:20, label:"eat ice cream together", emoji:"🍦", done:false, special:false },
+  { id:21, label:"read novels together", emoji:"📖", done:false, special:false },
+  { id:22, label:"matching outfit date", emoji:"👗", done:false, special:false },
+  { id:23, label:"late night drive date", emoji:"🌙", done:false, special:false },
+  { id:24, label:"watch the rain together", emoji:"🌧️", done:false, special:false },
+  { id:25, label:"celebrate little achievements", emoji:"🥂", done:false, special:false },
+  { id:26, label:"take candid photos together", emoji:"🤳", done:false, special:false },
+  { id:27, label:"clay date", emoji:"🏺", done:false, special:false },
+  { id:28, label:"lego date", emoji:"🧱", done:true, special:false },
+  { id:29, label:"swimming date", emoji:"🏊", done:false, special:false },
+  { id:30, label:"waterfall date", emoji:"💧", done:false, special:false },
+  { id:31, label:"monas date", emoji:"🗼", done:true, special:false },
+  { id:32, label:"rainy day date", emoji:"☔", done:false, special:false },
+  { id:33, label:"sunrise date", emoji:"🌅", done:false, special:false },
+  { id:34, label:"sunset date", emoji:"🌇", done:false, special:false },
+  { id:35, label:"apart date", emoji:"💌", done:false, special:true },
+];
+
+let extras = {}; // per id: { done, photos:[], note, dateStr, fav }
+let startDate = null;
+let loveLetterText = '';
+let loveLetterSig = 'Fajar ❤️';
+let currentId = null;
+
+function loadLocal() {
+  try {
+    const raw = localStorage.getItem('lovejourney_v2');
+    if (!raw) return;
+    const d = JSON.parse(raw);
+    if (d.extras) extras = d.extras;
+    if (d.startDate) startDate = d.startDate;
+    if (d.loveLetterText !== undefined) loveLetterText = d.loveLetterText;
+    if (d.loveLetterSig !== undefined) loveLetterSig = d.loveLetterSig;
+    DATE_LIST.forEach(dt => { if (extras[dt.id]) dt.done = !!extras[dt.id].done; });
+  } catch(e) {}
+}
+
+function saveLocal() {
+  try {
+    DATE_LIST.forEach(dt => {
+      if (!extras[dt.id]) extras[dt.id] = {};
+      extras[dt.id].done = dt.done;
+    });
+    localStorage.setItem('lovejourney_v2', JSON.stringify({ extras, startDate, loveLetterText, loveLetterSig }));
+  } catch(e) {}
+}
+
+function save() { saveLocal(); }
+
+// ── HEARTS CANVAS ──
+(function() {
+  const canvas = document.getElementById('hearts-canvas');
+  const ctx = canvas.getContext('2d');
+  const hearts = [];
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < 18; i++) {
+    hearts.push({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      size: 8 + Math.random() * 14,
+      speed: 0.2 + Math.random() * 0.5,
+      opacity: 0.05 + Math.random() * 0.12,
+      drift: (Math.random() - 0.5) * 0.3,
+      wobble: Math.random() * Math.PI * 2,
+    });
+  }
+
+  function drawHeart(ctx, x, y, size) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.beginPath();
+    ctx.moveTo(0, -size * 0.25);
+    ctx.bezierCurveTo(size * 0.5, -size * 0.75, size, -size * 0.1, 0, size * 0.6);
+    ctx.bezierCurveTo(-size, -size * 0.1, -size * 0.5, -size * 0.75, 0, -size * 0.25);
+    ctx.closePath();
+    ctx.restore();
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    hearts.forEach(h => {
+      h.y -= h.speed;
+      h.x += Math.sin(h.wobble) * h.drift;
+      h.wobble += 0.02;
+      if (h.y < -30) { h.y = canvas.height + 10; h.x = Math.random() * canvas.width; }
+      ctx.globalAlpha = h.opacity;
+      ctx.fillStyle = '#f96ba8';
+      drawHeart(ctx, h.x, h.y, h.size);
+      ctx.fill();
+    });
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+})();
+
+// ── DAYS COUNTER ──
+function updateCounter() {
+  const el = document.getElementById('daysCount');
+  const inp = document.getElementById('startDateInput');
+  if (startDate) {
+    inp.value = startDate;
+    const diff = Math.floor((Date.now() - new Date(startDate)) / 86400000);
+    el.textContent = diff > 0 ? diff : '—';
+  }
+}
+
+document.getElementById('startDateInput').addEventListener('change', e => {
+  startDate = e.target.value;
+  saveLocal();
+  saveMetaToSupabase();
+  updateCounter();
+});
+
+// ── PROGRESS ──
+function updateProgress() {
+  const done = DATE_LIST.filter(d => d.done).length;
+  const total = DATE_LIST.length;
+  const pct = Math.round(done / total * 100);
+  document.getElementById('progressNum').textContent = done + ' / ' + total;
+  document.getElementById('progressPct').textContent = pct + '%';
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+
+// ── CARDS ──
+function renderCards() {
+  const grid = document.getElementById('cardsGrid');
+  grid.innerHTML = '';
+  DATE_LIST.forEach(dt => {
+    const card = document.createElement('div');
+    card.className = 'date-card' + (dt.done ? ' done' : '') + (dt.special ? ' special' : '');
+    card.dataset.id = dt.id;
+    const ex = extras[dt.id] || {};
+    const isFav = ex.fav;
+    card.innerHTML = `
+      ${isFav ? '<span class="card-star">⭐</span>' : ''}
+      <span class="card-checkmark">✓</span>
+      <div class="card-emoji-wrap">${dt.emoji}</div>
+      <div class="card-name">${dt.label}</div>
+      <div class="card-status ${dt.done ? 'completed' : ''}">${dt.done ? '✓ completed 💕' : 'dreaming... ✨'}</div>
+    `;
+    card.addEventListener('click', () => openModal(dt.id));
+    grid.appendChild(card);
+  });
+}
+
+// ── TIMELINE ──
+function renderTimeline() {
+  const tl = document.getElementById('timeline');
+  const done = DATE_LIST.filter(d => d.done);
+  if (!done.length) {
+    tl.innerHTML = '<div class="empty-state">No completed dates yet~ mark some as done to see your journey 🌸</div>';
+    return;
+  }
+
+  const byYear = {};
+  done.forEach(dt => {
+    const ex = extras[dt.id] || {};
+    let yr = '—';
+    if (ex.dateStr) yr = ex.dateStr.slice(0, 4);
+    if (!byYear[yr]) byYear[yr] = [];
+    byYear[yr].push(dt);
+  });
+
+  tl.innerHTML = '';
+  Object.keys(byYear).sort().forEach(yr => {
+    const h = document.createElement('div');
+    h.className = 'tl-year';
+    h.textContent = yr;
+    tl.appendChild(h);
+    byYear[yr].forEach(dt => {
+      const ex = extras[dt.id] || {};
+      const item = document.createElement('div');
+      item.className = 'tl-item';
+      item.innerHTML = `<span class="tl-emoji">${dt.emoji}</span><div class="tl-info"><div class="tl-name">${dt.label}</div><div class="tl-date-label">${ex.dateStr || 'date not set'}</div></div>`;
+      item.addEventListener('click', () => openModal(dt.id));
+      tl.appendChild(item);
+    });
+  });
+}
+
+// ── POLAROID WALL ──
+function renderWall() {
+  const wall = document.getElementById('polaroidWall');
+  const withPhoto = DATE_LIST.filter(dt => {
+    const ex = extras[dt.id] || {};
+    return ex.photos && ex.photos.length > 0;
+  });
+
+  if (!withPhoto.length) {
+    wall.innerHTML = '<div class="empty-state">Photos will appear here when you add them to completed dates 💕</div>';
+    return;
+  }
+
+  wall.innerHTML = '';
+  withPhoto.forEach(dt => {
+    const ex = extras[dt.id] || {};
+    const pol = document.createElement('div');
+    pol.className = 'polaroid';
+    pol.innerHTML = `
+      <div class="polaroid-photo">
+        <img src="${ex.photos[0]}" alt="${dt.label}">
+      </div>
+      <div class="polaroid-label">${dt.label}</div>
+    `;
+    pol.addEventListener('click', () => openModal(dt.id));
+    wall.appendChild(pol);
+  });
+}
+
+// ── RANDOM PICKER ──
+function pickRandom() {
+  const pending = DATE_LIST.filter(d => !d.done);
+  if (!pending.length) { alert('Wah, semua udah ke-checklist! 🎉'); return; }
+  const pick = pending[Math.floor(Math.random() * pending.length)];
+  const res = document.getElementById('randomResult');
+  document.getElementById('randomDateName').textContent = pick.emoji + ' ' + pick.label;
+  res.classList.remove('show');
+  void res.offsetWidth;
+  res.classList.add('show');
+}
+
+function scrollToFav() {
+  const fav = Object.entries(extras).find(([,v]) => v.fav);
+  if (!fav) { alert('Belum ada favorite date nih~ tap ⭐ di detail date untuk set favorite!'); return; }
+  openModal(parseInt(fav[0]));
+}
+
+// ── MODAL ──
+let modalPhotos = [];
+let modalCurrentPhoto = 0;
+
+function openModal(id) {
+  currentId = id;
+  const dt = DATE_LIST.find(d => d.id === id);
+  const ex = extras[id] || {};
+
+  document.getElementById('mEmoji').textContent = dt.emoji;
+  document.getElementById('mName').textContent = dt.label;
+  const badge = document.getElementById('mBadge');
+  badge.textContent = dt.done ? '✓ completed 💕' : 'not done yet~ ✨';
+  badge.className = 'badge' + (dt.done ? ' done' : '');
+  document.getElementById('mDate').value = ex.dateStr || '';
+  document.getElementById('mNote').value = ex.note || '';
+  document.getElementById('btnToggleDone').textContent = dt.done ? 'Mark as undone' : 'Mark as done ✓';
+  document.getElementById('btnSetFav').textContent = ex.fav ? '⭐ Remove favorite' : '⭐ Set as favorite';
+
+  modalPhotos = (ex.photos || []).slice();
+  modalCurrentPhoto = 0;
+  renderPhotoSwiper();
+
+  document.getElementById('modalBg').classList.add('open');
+}
+
+function renderPhotoSwiper() {
+  const inner = document.getElementById('photoSwiperInner');
+  const dots = document.getElementById('photoDots');
+  inner.innerHTML = '';
+  dots.innerHTML = '';
+
+  if (modalPhotos.length === 0) {
+    const slide = document.createElement('div');
+    slide.className = 'photo-slide';
+    slide.innerHTML = '<div class="add-photo-btn"><span>📷</span><span>add a photo</span></div>';
+    slide.querySelector('.add-photo-btn').addEventListener('click', () => document.getElementById('photoFileInput').click());
+    inner.appendChild(slide);
+  } else {
+    modalPhotos.forEach((src, i) => {
+      const slide = document.createElement('div');
+      slide.className = 'photo-slide';
+      slide.style.position = 'relative';
+      const img = document.createElement('img');
+      img.src = src;
+      slide.appendChild(img);
+      const delBtn = document.createElement('button');
+      delBtn.textContent = '🗑️ hapus foto';
+      delBtn.style.cssText = 'position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.55);color:#fff;border:none;border-radius:20px;padding:5px 14px;font-size:12px;cursor:pointer;font-family:Poppins,sans-serif;';
+      delBtn.addEventListener('click', async () => {
+        if (!confirm('Hapus foto ini?')) return;
+        const url = modalPhotos[i];
+        if (url.startsWith('http')) await deletePhoto(url).catch(()=>{});
+        modalPhotos.splice(i, 1);
+        renderPhotoSwiper();
+        if (!extras[currentId]) extras[currentId] = {};
+        extras[currentId].photos = modalPhotos.slice();
+        extras[currentId].done = DATE_LIST.find(d => d.id === currentId).done;
+        extras[currentId].dateStr = document.getElementById('mDate').value;
+        extras[currentId].note = document.getElementById('mNote').value;
+        saveLocal();
+        saveDateToSupabase(currentId);
+      });
+      slide.appendChild(delBtn);
+      inner.appendChild(slide);
+      const dot = document.createElement('div');
+      dot.className = 'photo-dot' + (i === modalCurrentPhoto ? ' active' : '');
+      dot.addEventListener('click', () => {
+        inner.scrollTo({ left: i * inner.offsetWidth, behavior: 'smooth' });
+      });
+      dots.appendChild(dot);
+    });
+    // track scroll
+    inner.addEventListener('scroll', () => {
+      const idx = Math.round(inner.scrollLeft / inner.offsetWidth);
+      dots.querySelectorAll('.photo-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+    }, { passive: true });
+  }
+}
+
+document.getElementById('photoFileInput').addEventListener('change', async e => {
+  const files = Array.from(e.target.files);
+  const uploadBtn = document.getElementById('btnAddPhoto');
+  uploadBtn.textContent = '⏳ Uploading...';
+  uploadBtn.disabled = true;
+  for (const file of files) {
+    try {
+      const url = await uploadPhoto(file, currentId);
+      modalPhotos.push(url);
+    } catch(err) {
+      await new Promise(resolve => {
+        const reader = new FileReader();
+        reader.onload = ev => { modalPhotos.push(ev.target.result); resolve(); };
+        reader.readAsDataURL(file);
+      });
+    }
+  }
+  renderPhotoSwiper();
+  uploadBtn.textContent = '📸 Add photo';
+  uploadBtn.disabled = false;
+  e.target.value = '';
+  // auto-save after upload
+  if (!extras[currentId]) extras[currentId] = {};
+  extras[currentId].photos = modalPhotos.slice();
+  extras[currentId].done = DATE_LIST.find(d => d.id === currentId).done;
+  extras[currentId].dateStr = document.getElementById('mDate').value;
+  extras[currentId].note = document.getElementById('mNote').value;
+  saveLocal();
+  saveDateToSupabase(currentId);
+});
+
+document.getElementById('btnAddPhoto').addEventListener('click', () => {
+  document.getElementById('photoFileInput').click();
+});
+
+document.getElementById('btnToggleDone').addEventListener('click', () => {
+  const dt = DATE_LIST.find(d => d.id === currentId);
+  dt.done = !dt.done;
+  saveModal();
+  renderAll();
+  openModal(currentId);
+});
+
+document.getElementById('btnSetFav').addEventListener('click', () => {
+  if (!extras[currentId]) extras[currentId] = {};
+  const wasFav = extras[currentId].fav;
+  // clear all favs
+  Object.values(extras).forEach(v => { if (v) v.fav = false; });
+  extras[currentId].fav = !wasFav;
+  saveModal();
+  renderAll();
+  openModal(currentId);
+});
+
+document.getElementById('btnSave').addEventListener('click', () => {
+  saveModal();
+  renderAll();
+  document.getElementById('modalBg').classList.remove('open');
+});
+
+function saveModal() {
+  if (!extras[currentId]) extras[currentId] = {};
+  extras[currentId].done = DATE_LIST.find(d => d.id === currentId).done;
+  extras[currentId].dateStr = document.getElementById('mDate').value;
+  extras[currentId].note = document.getElementById('mNote').value;
+  extras[currentId].photos = modalPhotos.slice();
+  saveLocal();
+  saveDateToSupabase(currentId);
+}
+
+document.getElementById('modalClose').addEventListener('click', () => {
+  document.getElementById('modalBg').classList.remove('open');
+});
+
+document.getElementById('modalBg').addEventListener('click', e => {
+  if (e.target === document.getElementById('modalBg')) document.getElementById('modalBg').classList.remove('open');
+});
+
+// ── TABS ──
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+    if (tab.dataset.tab === 'timeline') renderTimeline();
+    if (tab.dataset.tab === 'wall') renderWall();
+  });
+});
+
+// ── LOVE LETTER ──
+document.getElementById('loveLetterBody').addEventListener('input', e => {
+  loveLetterText = e.target.value;
+  saveLocal();
+  saveMetaToSupabase();
+});
+
+document.getElementById('loveLetterSig').addEventListener('input', e => {
+  loveLetterSig = e.target.value;
+  saveLocal();
+  saveMetaToSupabase();
+});
+
+// ── RENDER ALL ──
+function renderAll() {
+  updateProgress();
+  renderCards();
+}
+
+// ── INIT ──
+async function init() {
+  loadLocal();
+  await loadFromSupabase();
+  updateCounter();
+  renderAll();
+  if (loveLetterText) document.getElementById('loveLetterBody').value = loveLetterText;
+  if (loveLetterSig) document.getElementById('loveLetterSig').value = loveLetterSig;
+}
+
+init();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+
+// PWA install prompt
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('installBanner').style.display = 'flex';
+});
+
+document.getElementById('installBtn').addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  document.getElementById('installBanner').style.display = 'none';
+});
+
+document.getElementById('installDismiss').addEventListener('click', () => {
+  document.getElementById('installBanner').style.display = 'none';
+});
+</script>
+</body>
+</html>
