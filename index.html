@@ -913,29 +913,48 @@
 
 <script>
 // ── SERVER (Vercel API + Vercel Blob) ──
-// Photos are uploaded straight from the browser to Vercel Blob storage
-// (see /api/upload.js), so there's no server body-size limit on photo size.
-// The rest of the data (checklist, notes, love letter) is stored as one
-// small JSON file in Blob storage via /api/data.js.
+// Photos are compressed in the browser first (so they stay well under the
+// server's request size limit), then sent straight to our own /api/upload,
+// which stores them in Vercel Blob. The rest of the data (checklist, notes,
+// love letter) is stored as one small JSON file in Blob via /api/data.js.
 
-let blobUploadFn = null;
-async function getBlobUpload() {
-  if (blobUploadFn) return blobUploadFn;
-  const mod = await import('https://esm.sh/@vercel/blob@2.8.0/client');
-  blobUploadFn = mod.upload;
-  return blobUploadFn;
+function compressImage(file, maxDim = 1600, quality = 0.82) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      let { width, height } = img;
+      if (width > maxDim || height > maxDim) {
+        if (width > height) { height = Math.round(height * maxDim / width); width = maxDim; }
+        else { width = Math.round(width * maxDim / height); height = maxDim; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+      canvas.toBlob((blob) => {
+        if (blob) resolve(blob); else reject(new Error('Compress failed'));
+      }, 'image/jpeg', quality);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Cannot read image')); };
+    img.src = url;
+  });
 }
 
 async function uploadPhoto(file, dateId) {
-  const upload = await getBlobUpload();
-  const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
-  const path = `love-journey/photos/date_${dateId}/${Date.now()}.${ext}`;
-  const blob = await upload(path, file, {
-    access: 'public',
-    handleUploadUrl: '/api/upload',
-    contentType: file.type || 'image/jpeg',
+  const compressed = await compressImage(file).catch(() => file); // fall back to original if compression fails
+  const res = await fetch(`/api/upload?dateId=${encodeURIComponent(dateId)}`, {
+    method: 'POST',
+    headers: { 'Content-Type': compressed.type || 'image/jpeg' },
+    body: compressed
   });
-  return blob.url;
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || `Upload failed (${res.status})`);
+  }
+  const data = await res.json();
+  return data.url;
 }
 
 async function deletePhoto(url) {
@@ -966,27 +985,74 @@ async function loadFromSupabase() {
   }
 }
 
-async function saveStateToServer() {
-  DATE_LIST.forEach(dt => {
-    if (!extras[dt.id]) extras[dt.id] = {};
-    extras[dt.id].done = dt.done;
-  });
+async function fetchServerState() {
+  try {
+    const res = await fetch('/api/data', { cache: 'no-store' });
+    if (!res.ok) throw new Error(await res.text());
+    return await res.json();
+  } catch (e) {
+    console.warn('Fetch server state failed:', e);
+    return null;
+  }
+}
+
+// Saving a single date's changes (photos/note/done/fav): pull the latest
+// server state first and only overwrite THIS date's entry, so a save from
+// another device/tab in the meantime doesn't get clobbered (e.g. a photo
+// someone else just added on a different date wouldn't get wiped out).
+async function saveDateToServer(id) {
+  const dt = DATE_LIST.find(d => d.id === id);
+  if (!extras[id]) extras[id] = {};
+  extras[id].done = dt ? dt.done : false;
+  const localEntry = extras[id];
+
+  const server = await fetchServerState();
+  const mergedExtras = { ...(server ? server.extras : extras), [id]: localEntry };
+  const payload = {
+    extras: mergedExtras,
+    startDate: server ? (server.startDate ?? null) : startDate,
+    loveLetterText: server ? (server.loveLetterText ?? '') : loveLetterText,
+    loveLetterSig: server ? (server.loveLetterSig ?? '') : loveLetterSig,
+  };
+
   try {
     await fetch('/api/data', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ extras, startDate, loveLetterText, loveLetterSig })
+      body: JSON.stringify(payload)
     });
+    extras = mergedExtras; // keep local state in sync with what we just merged/saved
   } catch (e) {
     console.warn('Server save failed:', e);
     saveLocal();
   }
 }
 
-// saveDateToSupabase/saveMetaToSupabase both used to save one row at a time;
-// now the whole (tiny) state is saved together.
-async function saveDateToSupabase(_id) { await saveStateToServer(); }
-async function saveMetaToSupabase() { await saveStateToServer(); }
+// Saving meta (start date / love letter): same idea, keep the server's
+// latest per-date data untouched and only overwrite the meta fields.
+async function saveMetaToServer() {
+  const server = await fetchServerState();
+  const payload = {
+    extras: server ? server.extras : extras,
+    startDate,
+    loveLetterText,
+    loveLetterSig,
+  };
+  try {
+    await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (server) extras = server.extras; // pick up any other device's date changes too
+  } catch (e) {
+    console.warn('Server save failed:', e);
+    saveLocal();
+  }
+}
+
+async function saveDateToSupabase(id) { await saveDateToServer(id); }
+async function saveMetaToSupabase() { await saveMetaToServer(); }
 
 // ── DATA ──
 const DATE_LIST = [
@@ -1335,6 +1401,8 @@ document.getElementById('photoFileInput').addEventListener('change', async e => 
       const url = await uploadPhoto(file, currentId);
       modalPhotos.push(url);
     } catch(err) {
+      console.error('Photo upload failed, falling back to local-only:', err);
+      alert('Upload foto gagal (' + (err.message || 'unknown error') + '). Foto ini cuma kesimpen di HP ini, gak ke-sync ke server. Coba cek koneksi lalu upload ulang.');
       await new Promise(resolve => {
         const reader = new FileReader();
         reader.onload = ev => { modalPhotos.push(ev.target.result); resolve(); };
