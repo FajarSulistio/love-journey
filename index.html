@@ -958,13 +958,15 @@ async function uploadPhoto(file, dateId) {
 }
 
 async function deletePhoto(url) {
-  try {
-    await fetch('/api/delete-photo', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url })
-    });
-  } catch (e) { console.warn('Delete photo failed:', e); }
+  const res = await fetch('/api/delete-photo', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || `Delete failed (${res.status})`);
+  }
 }
 
 async function loadFromSupabase() {
@@ -996,59 +998,110 @@ async function fetchServerState() {
   }
 }
 
+// ── Tiny toast, so saves failing (or taking a while) is visible instead of silent ──
+function showToast(msg, opts = {}) {
+  let el = document.getElementById('__toast');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = '__toast';
+    el.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(61,37,53,0.92);color:#fff;padding:9px 18px;border-radius:20px;font-family:Poppins,sans-serif;font-size:12.5px;z-index:9999;transition:opacity .2s;pointer-events:none;max-width:88vw;text-align:center;';
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  el.style.background = opts.error ? 'rgba(200,50,60,0.94)' : 'rgba(61,37,53,0.92)';
+  el.style.opacity = '1';
+  clearTimeout(el.__hideTimer);
+  if (opts.autoHide !== false) {
+    el.__hideTimer = setTimeout(() => { el.style.opacity = '0'; }, opts.error ? 4000 : 1400);
+  }
+}
+function hideToast() {
+  const el = document.getElementById('__toast');
+  if (el) el.style.opacity = '0';
+}
+
+// ── Save queue: only ONE save-to-server runs at a time, in order.
+// Without this, two overlapping saves (e.g. auto-save after upload + a
+// quick tap on "Save") can each fetch the server, then post back-to-back —
+// whichever POST lands last wins and can silently undo the other one.
+let saveChain = Promise.resolve();
+function queueSave(fn) {
+  const run = saveChain.then(fn, fn);
+  saveChain = run.catch(() => {});
+  return run;
+}
+
 // Saving a single date's changes (photos/note/done/fav): pull the latest
 // server state first and only overwrite THIS date's entry, so a save from
 // another device/tab in the meantime doesn't get clobbered (e.g. a photo
 // someone else just added on a different date wouldn't get wiped out).
-async function saveDateToServer(id) {
-  const dt = DATE_LIST.find(d => d.id === id);
-  if (!extras[id]) extras[id] = {};
-  extras[id].done = dt ? dt.done : false;
-  const localEntry = extras[id];
+function saveDateToServer(id) {
+  return queueSave(async () => {
+    showToast('Menyimpan...', { autoHide: false });
+    const dt = DATE_LIST.find(d => d.id === id);
+    if (!extras[id]) extras[id] = {};
+    extras[id].done = dt ? dt.done : false;
+    const localEntry = extras[id];
 
-  const server = await fetchServerState();
-  const mergedExtras = { ...(server ? server.extras : extras), [id]: localEntry };
-  const payload = {
-    extras: mergedExtras,
-    startDate: server ? (server.startDate ?? null) : startDate,
-    loveLetterText: server ? (server.loveLetterText ?? '') : loveLetterText,
-    loveLetterSig: server ? (server.loveLetterSig ?? '') : loveLetterSig,
-  };
+    const server = await fetchServerState();
+    const mergedExtras = { ...(server ? server.extras : extras), [id]: localEntry };
+    const payload = {
+      extras: mergedExtras,
+      startDate: server ? (server.startDate ?? null) : startDate,
+      loveLetterText: server ? (server.loveLetterText ?? '') : loveLetterText,
+      loveLetterSig: server ? (server.loveLetterSig ?? '') : loveLetterSig,
+    };
 
-  try {
-    await fetch('/api/data', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    extras = mergedExtras; // keep local state in sync with what we just merged/saved
-  } catch (e) {
-    console.warn('Server save failed:', e);
-    saveLocal();
-  }
+    try {
+      const res = await fetch('/api/data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || `Save failed (${res.status})`);
+      }
+      extras = mergedExtras; // keep local state in sync with what we just merged/saved
+      showToast('Tersimpan ✓');
+    } catch (e) {
+      console.error('Server save failed:', e);
+      saveLocal();
+      showToast('Gagal menyimpan ke server (' + e.message + '). Coba lagi.', { error: true });
+    }
+  });
 }
 
 // Saving meta (start date / love letter): same idea, keep the server's
 // latest per-date data untouched and only overwrite the meta fields.
-async function saveMetaToServer() {
-  const server = await fetchServerState();
-  const payload = {
-    extras: server ? server.extras : extras,
-    startDate,
-    loveLetterText,
-    loveLetterSig,
-  };
-  try {
-    await fetch('/api/data', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    if (server) extras = server.extras; // pick up any other device's date changes too
-  } catch (e) {
-    console.warn('Server save failed:', e);
-    saveLocal();
-  }
+function saveMetaToServer() {
+  return queueSave(async () => {
+    showToast('Menyimpan...', { autoHide: false });
+    const server = await fetchServerState();
+    const payload = {
+      extras: server ? server.extras : extras,
+      startDate,
+      loveLetterText,
+      loveLetterSig,
+    };
+    try {
+      const res = await fetch('/api/data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || `Save failed (${res.status})`);
+      }
+      if (server) extras = server.extras; // pick up any other device's date changes too
+      showToast('Tersimpan ✓');
+    } catch (e) {
+      console.error('Server save failed:', e);
+      saveLocal();
+      showToast('Gagal menyimpan ke server (' + e.message + '). Coba lagi.', { error: true });
+    }
+  });
 }
 
 async function saveDateToSupabase(id) { await saveDateToServer(id); }
@@ -1317,6 +1370,12 @@ let modalCurrentPhoto = 0;
 
 function openModal(id) {
   currentId = id;
+  renderModalContent(id); // instant, using whatever we have locally
+  document.getElementById('modalBg').classList.add('open');
+  refreshModalFromServer(id); // then quietly catch up with the server in the background
+}
+
+function renderModalContent(id) {
   const dt = DATE_LIST.find(d => d.id === id);
   const ex = extras[id] || {};
 
@@ -1333,8 +1392,23 @@ function openModal(id) {
   modalPhotos = (ex.photos || []).slice();
   modalCurrentPhoto = 0;
   renderPhotoSwiper();
+}
 
-  document.getElementById('modalBg').classList.add('open');
+// Refresh from server after the modal is already open. This is what fixes
+// "delete a photo, and it comes back later" — that happened because the
+// page only loaded data once, so an old in-memory copy (with the
+// already-deleted photo) could get saved back over a newer server state.
+async function refreshModalFromServer(id) {
+  const server = await fetchServerState();
+  if (!server || !server.extras) return;
+  extras = { ...extras, ...server.extras };
+  DATE_LIST.forEach(dt => { if (extras[dt.id]) dt.done = !!extras[dt.id].done; });
+  if (server.startDate) startDate = server.startDate;
+  if (server.loveLetterText !== undefined) loveLetterText = server.loveLetterText;
+  if (server.loveLetterSig !== undefined) loveLetterSig = server.loveLetterSig;
+  if (currentId !== id) return; // user already switched to a different date, don't clobber what they're looking at now
+  renderModalContent(id);
+  renderAll();
 }
 
 function renderPhotoSwiper() {
@@ -1363,7 +1437,15 @@ function renderPhotoSwiper() {
       delBtn.addEventListener('click', async () => {
         if (!confirm('Hapus foto ini?')) return;
         const url = modalPhotos[i];
-        if (url.startsWith('http')) await deletePhoto(url).catch(()=>{});
+        if (url.startsWith('http')) {
+          try {
+            await deletePhoto(url);
+          } catch (err) {
+            console.error('Delete photo failed:', err);
+            alert('Gagal hapus foto di server (' + err.message + '). Coba lagi ya.');
+            return; // don't remove locally if the server delete failed
+          }
+        }
         modalPhotos.splice(i, 1);
         renderPhotoSwiper();
         if (!extras[currentId]) extras[currentId] = {};
